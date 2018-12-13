@@ -1,7 +1,9 @@
-package main
+	package main
 
 import (
 	"fmt"
+	"log"
+	"time"
 )
 
 func main() {
@@ -23,6 +25,10 @@ func main() {
 			fuelGrid[x-1][y-1] = powerLevel
 		}
 	}
+	start := time.Now()
+
+	// r := new(big.Int)
+	// fmt.Println(r.Binomial(1000, 10))
 
 	maxSquareSum := 0
 	maxX := 0
@@ -71,6 +77,8 @@ func main() {
 					}
 					//reset squareSum to 0
 					squareSum = 0
+				} else {
+					break
 				}
 			}
 			squareSum = 0
@@ -80,4 +88,6 @@ func main() {
 	fmt.Println(maxX + 1)
 	fmt.Println(maxY + 1)
 	fmt.Println(maxSquareSize)
+	elapsed := time.Since(start)
+	log.Printf("Binomial took %s", elapsed)
 }
