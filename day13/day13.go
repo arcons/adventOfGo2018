@@ -35,15 +35,15 @@ func main() {
 	}
 
 	fileHandle, _ := os.Open("day13input.txt")
-	// fileHandle, _ := os.Open("day13testinput2.txt")
+	// fileHandle, _ := os.Open("day13test2input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	carts := []Cart{}
 	cartCount := 0
 	cartIndex := 0
 	carts = make([]Cart, cartCount)
 	counter := 0
-	fo, err := os.Create("output.txt")
-	check(err)
+	// fo, err := os.Create("output.txt")
+	// check(err)
 	//scan in the inputs and get the number of carts
 	//there is a better way of handling this by doing a copy/append
 	for fileScanner.Scan() {
@@ -53,42 +53,37 @@ func main() {
 	}
 	for i := range trackMap {
 		fmt.Println(string(trackMap[i]))
-		fo.Write(trackMap[i])
 	}
 	// fmt.Println(string(trackMap[108]))
 	//allocate memory for the number of carts
 	carts = make([]Cart, cartCount)
 	//carts go left, straight, right at intersections
 	//maybe change the cartmap position to replace turns with - or |
-	for i := range trackMap {
-		fmt.Println(string(trackMap[i]))
-	}
 	for j := range trackMap {
 		if bytes.Contains(trackMap[j], []byte("<")) {
 			for i := range trackMap[j] {
 				if trackMap[j][i] == '<' {
-					carts[cartIndex] = Cart{i, j, '<', "left", false}
+					carts[cartIndex] = Cart{i, j, '<', "left"}
 					cartIndex++
-					trackMap[j][i] = '-'
+					// trackMap[j][i] = '-'
 				}
 			}
 		}
 		if bytes.Contains(trackMap[j], []byte(">")) {
 			for i := range trackMap[j] {
 				if trackMap[j][i] == '>' {
-					carts[cartIndex] = Cart{i, j, '>', "left", false}
+					carts[cartIndex] = Cart{i, j, '>', "left"}
 					cartIndex++
-					trackMap[j][i] = '-'
+					// trackMap[j][i] = '-'
 				}
 			}
 		}
 		if bytes.Contains(trackMap[j], []byte("^")) {
 			for i := range trackMap[j] {
 				if trackMap[j][i] == '^' {
-					carts[cartIndex] = Cart{i, j, '^', "left", false}
+					carts[cartIndex] = Cart{i, j, '^', "left"}
 					cartIndex++
-					trackMap[j][i] = '|'
-
+					// trackMap[j][i] = '|'
 				}
 			}
 		}
@@ -96,15 +91,13 @@ func main() {
 			for i := range trackMap[j] {
 				if trackMap[j][i] == 'v' {
 					// fmt.Println(j)
-					carts[cartIndex] = Cart{i, j, 'v', "left", false}
+					carts[cartIndex] = Cart{i, j, 'v', "left"}
 					cartIndex++
-					trackMap[j][i] = '|'
+					// trackMap[j][i] = '|'
 				}
 			}
 		}
 	}
-	collidingX := 0
-	collidingY := 0
 
 	//carts are correct
 	//traverse through the map and get move the carts
@@ -113,12 +106,15 @@ func main() {
 	//keep a list of the carts at intersections
 	for n := 0; n < 100000000; n++ {
 		for i := range carts {
+			// if carts[i].x == 4 && carts[i].y == 109 {
+			// 	fmt.Println(string(trackMap[carts[i].y][carts[i].x]))
+			// }
 			if carts[i].currentDirection == '>' {
 				carts[i].x++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
-				if trackMap[carts[i].y][carts[i].x] == 92 {
+				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
 					carts[i].currentDirection = 'v'
-				} else if trackMap[carts[i].y][carts[i].x] == 47 {
+				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
 					carts[i].currentDirection = '^'
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
 					if carts[i].nextTurn == "left" {
@@ -135,9 +131,9 @@ func main() {
 			} else if carts[i].currentDirection == '<' {
 				carts[i].x--
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
-				if trackMap[carts[i].y][carts[i].x] == 92 {
+				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
 					carts[i].currentDirection = '^'
-				} else if trackMap[carts[i].y][carts[i].x] == 47 {
+				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
 					carts[i].currentDirection = 'v'
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
 					if carts[i].nextTurn == "left" {
@@ -155,9 +151,9 @@ func main() {
 				carts[i].y--
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 
-				if trackMap[carts[i].y][carts[i].x] == 92 {
+				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
 					carts[i].currentDirection = '<'
-				} else if trackMap[carts[i].y][carts[i].x] == 47 {
+				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
 					// right
 					carts[i].currentDirection = '>'
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
@@ -176,10 +172,10 @@ func main() {
 			} else if carts[i].currentDirection == 'v' {
 				carts[i].y++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
-				if trackMap[carts[i].y][carts[i].x] == 92 {
+				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
 					carts[i].currentDirection = '>'
 
-				} else if trackMap[carts[i].y][carts[i].x] == 47 {
+				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
 					// \
 					carts[i].currentDirection = '<'
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
