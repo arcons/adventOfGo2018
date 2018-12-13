@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
 //Cart ...struct for location
 type Cart struct {
 	x                int
@@ -18,10 +24,10 @@ type Cart struct {
 func main() {
 	// fmt.Print("Hello")
 	//real inputs
-	// const xRange = 151
-	// const yRange = 150
-	const xRange = 14
-	const yRange = 6
+	const xRange = 151
+	const yRange = 150
+	// const xRange = 8
+	// const yRange = 7
 	//build 2d array as map
 	trackMap := make([][]byte, yRange)
 	for i := range trackMap {
@@ -29,12 +35,15 @@ func main() {
 	}
 
 	fileHandle, _ := os.Open("day13input.txt")
+	// fileHandle, _ := os.Open("day13testinput2.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	carts := []Cart{}
 	cartCount := 0
 	cartIndex := 0
 	carts = make([]Cart, cartCount)
 	counter := 0
+	fo, err := os.Create("output.txt")
+	check(err)
 	//scan in the inputs and get the number of carts
 	//there is a better way of handling this by doing a copy/append
 	for fileScanner.Scan() {
@@ -42,6 +51,11 @@ func main() {
 		cartCount += getCartCount(trackMap[counter])
 		counter++
 	}
+	for i := range trackMap {
+		fmt.Println(string(trackMap[i]))
+		fo.Write(trackMap[i])
+	}
+	// fmt.Println(string(trackMap[108]))
 	//allocate memory for the number of carts
 	carts = make([]Cart, cartCount)
 	//carts go left, straight, right at intersections
@@ -136,12 +150,8 @@ func main() {
 						carts[i].nextTurn = "left"
 						carts[i].currentDirection = '^'
 					}
-					carts[i].onIntersection = true
-				} else {
-					carts[i].onIntersection = false
 				}
 			} else if carts[i].currentDirection == '^' {
-				// left turn
 				carts[i].y--
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 
@@ -172,7 +182,6 @@ func main() {
 				} else if trackMap[carts[i].y][carts[i].x] == 47 {
 					// \
 					carts[i].currentDirection = '<'
-					carts[i].onIntersection = false
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
 					// +
 					if carts[i].nextTurn == "left" {
@@ -192,24 +201,48 @@ func main() {
 		for i := 0; i < len(carts); i++ {
 			j := i + 1
 			for j < len(carts) {
+				//For part 1 just print the first collision removal
 				if carts[i].x == carts[j].x && carts[i].y == carts[j].y {
-					collidingX = carts[i].x
-					collidingY = carts[i].y
+					// fmt.Printf("Carts have collided # %d and %d\n", i, j)
+					// fmt.Println(carts[i])
+					// for q := 0; q < len(carts); q++ {
+					// fmt.Printf("x %d and y %d\n", carts[q].x, carts[q].y)
+					// }
+					secondCart := carts[j]
+					secCartIndex := j
+					fmt.Printf("Removed at x %d and y %d\n", carts[i].x, carts[i].y)
+					fmt.Println(carts)
+					carts = remove(carts, i)
+					for q := 0; q < len(carts); q++ {
+						if carts[q] == secondCart {
+							secCartIndex = q
+						}
+					}
+					carts = remove(carts, secCartIndex)
+					// fmt.Print("New Carts : ")
+					// fmt.Println(carts)
+					// fmt.Print("\n\n")
+					// loop through again and check for more colisions this turn
+					i = 0
+					j = 0
+					n = 0
 					break
 				}
 				j++
 			}
-			if collidingX != 0 {
-				break
-			}
 		}
-		if collidingX != 0 {
+		if len(carts) == 1 {
 			break
 		}
+		// fmt.Printf("Run# %d\n", n+1)
 	}
-
-	fmt.Println(collidingX, collidingY)
+	fmt.Print(carts[0])
+	fmt.Println(carts[0].x, carts[0].y)
 	//loop through the carts and check if they intersected
+}
+
+func remove(slice []Cart, s int) []Cart {
+	return append(slice[:s], slice[s+1:]...)
 }
 
 func getNextLocation(char byte, x int, y int) (int, int) {
