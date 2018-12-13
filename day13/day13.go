@@ -13,7 +13,6 @@ type Cart struct {
 	y                int
 	currentDirection byte
 	nextTurn         string
-	onIntersection   bool
 }
 
 func main() {
@@ -28,7 +27,7 @@ func main() {
 	for i := range trackMap {
 		trackMap[i] = make([]byte, xRange)
 	}
-	// fileHandle, _ := os.Open("day13testinput.txt")
+
 	fileHandle, _ := os.Open("day13input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	carts := []Cart{}
@@ -99,22 +98,13 @@ func main() {
 	//cart options <(60), >(62), ^(94), v(118)
 	//keep a list of the carts at intersections
 	for n := 0; n < 100000000; n++ {
-		// fmt.Println(carts, n)
-		// if n == 7 {
-		// fmt.Print("Stop here")
-		// }
 		for i := range carts {
 			if carts[i].currentDirection == '>' {
-				//check for a turn or intersection, else x+1
-				//perform the turn operation
-				//left turn
 				carts[i].x++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 				if trackMap[carts[i].y][carts[i].x] == 92 {
-					carts[i].onIntersection = false
 					carts[i].currentDirection = 'v'
 				} else if trackMap[carts[i].y][carts[i].x] == 47 {
-					carts[i].onIntersection = false
 					carts[i].currentDirection = '^'
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
 					if carts[i].nextTurn == "left" {
@@ -127,20 +117,14 @@ func main() {
 						carts[i].nextTurn = "left"
 						carts[i].currentDirection = 'v'
 					}
-					carts[i].onIntersection = true
-				} else {
-					carts[i].onIntersection = false
 				}
 			} else if carts[i].currentDirection == '<' {
-				//left turn
 				carts[i].x--
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 				if trackMap[carts[i].y][carts[i].x] == 92 {
-					carts[i].onIntersection = false
 					carts[i].currentDirection = '^'
 				} else if trackMap[carts[i].y][carts[i].x] == 47 {
 					carts[i].currentDirection = 'v'
-					carts[i].onIntersection = false
 				} else if trackMap[carts[i].y][carts[i].x] == 43 {
 					if carts[i].nextTurn == "left" {
 						carts[i].nextTurn = "str"
@@ -178,16 +162,12 @@ func main() {
 						carts[i].nextTurn = "left"
 						carts[i].currentDirection = '>'
 					}
-				} else {
-					carts[i].onIntersection = false
 				}
 			} else if carts[i].currentDirection == 'v' {
-				// right turn
 				carts[i].y++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 				if trackMap[carts[i].y][carts[i].x] == 92 {
 					carts[i].currentDirection = '>'
-					carts[i].onIntersection = false
 
 				} else if trackMap[carts[i].y][carts[i].x] == 47 {
 					// \
@@ -205,9 +185,6 @@ func main() {
 						carts[i].nextTurn = "left"
 						carts[i].currentDirection = '<'
 					}
-					carts[i].onIntersection = true
-				} else {
-					carts[i].onIntersection = false
 				}
 			}
 		}
