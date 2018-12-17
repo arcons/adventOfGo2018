@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"sort"
 )
 
 func check(e error) {
@@ -22,18 +23,17 @@ type Cart struct {
 }
 
 func main() {
-	// fmt.Print("Hello")
 	//real inputs
 	const xRange = 151
-	const yRange = 150
+	const yRange = 151
 	// const xRange = 8
 	// const yRange = 7
 	//build 2d array as map
-	trackMap := make([][]byte, yRange)
+	trackMap := make([][]byte, xRange)
 	for i := range trackMap {
-		trackMap[i] = make([]byte, xRange)
+		trackMap[i] = make([]byte, yRange)
 	}
-
+	// fileHandle, _ := os.Open("internetinput.txt")
 	fileHandle, _ := os.Open("day13input.txt")
 	// fileHandle, _ := os.Open("day13test2input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
@@ -51,9 +51,10 @@ func main() {
 		cartCount += getCartCount(trackMap[counter])
 		counter++
 	}
-	for i := range trackMap {
-		fmt.Println(string(trackMap[i]))
-	}
+	//output for map
+	// for i := range trackMap {
+	// 	fmt.Println(string(trackMap[i]))
+	// }
 	// fmt.Println(string(trackMap[108]))
 	//allocate memory for the number of carts
 	carts = make([]Cart, cartCount)
@@ -65,7 +66,6 @@ func main() {
 				if trackMap[j][i] == '<' {
 					carts[cartIndex] = Cart{i, j, '<', "left"}
 					cartIndex++
-					// trackMap[j][i] = '-'
 				}
 			}
 		}
@@ -74,7 +74,6 @@ func main() {
 				if trackMap[j][i] == '>' {
 					carts[cartIndex] = Cart{i, j, '>', "left"}
 					cartIndex++
-					// trackMap[j][i] = '-'
 				}
 			}
 		}
@@ -83,32 +82,32 @@ func main() {
 				if trackMap[j][i] == '^' {
 					carts[cartIndex] = Cart{i, j, '^', "left"}
 					cartIndex++
-					// trackMap[j][i] = '|'
 				}
 			}
 		}
 		if bytes.Contains(trackMap[j], []byte("v")) {
 			for i := range trackMap[j] {
 				if trackMap[j][i] == 'v' {
-					// fmt.Println(j)
 					carts[cartIndex] = Cart{i, j, 'v', "left"}
 					cartIndex++
-					// trackMap[j][i] = '|'
 				}
 			}
 		}
 	}
-
+	if cartCount != cartIndex {
+		return
+	}
 	//carts are correct
 	//traverse through the map and get move the carts
 	// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 	//cart options <(60), >(62), ^(94), v(118)
 	//keep a list of the carts at intersections
 	for n := 0; n < 100000000; n++ {
-		for i := range carts {
+		for i := 0; i < len(carts); i++ {
 			// if carts[i].x == 4 && carts[i].y == 109 {
 			// 	fmt.Println(string(trackMap[carts[i].y][carts[i].x]))
 			// }
+			//every cart moves
 			if carts[i].currentDirection == '>' {
 				carts[i].x++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
@@ -192,18 +191,8 @@ func main() {
 					}
 				}
 			}
-		}
-
-		for i := 0; i < len(carts); i++ {
-			j := i + 1
-			for j < len(carts) {
-				//For part 1 just print the first collision removal
-				if carts[i].x == carts[j].x && carts[i].y == carts[j].y {
-					// fmt.Printf("Carts have collided # %d and %d\n", i, j)
-					// fmt.Println(carts[i])
-					// for q := 0; q < len(carts); q++ {
-					// fmt.Printf("x %d and y %d\n", carts[q].x, carts[q].y)
-					// }
+			for j := 0; j < len(carts); j++ {
+				if i != j && carts[i].x == carts[j].x && carts[i].y == carts[j].y {
 					secondCart := carts[j]
 					secCartIndex := j
 					fmt.Printf("Removed at x %d and y %d\n", carts[i].x, carts[i].y)
@@ -214,23 +203,60 @@ func main() {
 							secCartIndex = q
 						}
 					}
+
 					carts = remove(carts, secCartIndex)
-					// fmt.Print("New Carts : ")
-					// fmt.Println(carts)
-					// fmt.Print("\n\n")
-					// loop through again and check for more colisions this turn
-					i = 0
 					j = 0
-					n = 0
+					i = 0
+					// 			sort.Slice(carts, func(q, r int) bool { return carts[q].y < carts[r].y })
+					sort.Slice(carts, func(q, r int) bool { return carts[q].x < carts[r].x })
+					// sort.Slice(carts, func(q, r int) bool { return carts[q].y < carts[r].y })
+
 					break
+
 				}
-				j++
 			}
 		}
+
+		// for i := 0; i < len(carts); i++ {
+		// 	j := i + 1
+		// 	for j < len(carts) {
+		// 		//For part 1 just print the first collision removal
+		// 		if carts[i].x == carts[j].x && carts[i].y == carts[j].y {
+		// 			// fmt.Printf("Carts have collided # %d and %d\n", i, j)
+		// 			// fmt.Println(carts[i])
+		// 			// for q := 0; q < len(carts); q++ {
+		// 			// fmt.Printf("x %d and y %d\n", carts[q].x, carts[q].y)
+		// 			// }
+		// 			secondCart := carts[j]
+		// 			secCartIndex := j
+		// 			fmt.Printf("Removed at x %d and y %d\n", carts[i].x, carts[i].y)
+		// 			fmt.Println(carts)
+		// 			carts = remove(carts, i)
+		// 			for q := 0; q < len(carts); q++ {
+		// 				if carts[q] == secondCart {
+		// 					secCartIndex = q
+		// 				}
+		// 			}
+		// 			carts = remove(carts, secCartIndex)
+		// 			// fmt.Print("New Carts : ")
+		// 			// fmt.Println(carts)
+		// 			// fmt.Print("\n\n")
+		// 			// loop through again and check for more colisions this turn
+		// 			i = 0
+		// 			j = 0
+		// 			n = 0
+		// 			// sort.Slice(carts, func(q, r int) bool { return carts[q].y < carts[r].y })
+		// 			sort.Slice(carts, func(q, r int) bool { return carts[q].x < carts[r].x })
+
+		// 			break
+		// 		}
+		// 		j++
+		// 	}
+		// }
+		// fmt.Printf("Run# %d\n", n+1)
 		if len(carts) == 1 {
 			break
 		}
-		// fmt.Printf("Run# %d\n", n+1)
 	}
 	fmt.Print(carts[0])
 	fmt.Println(carts[0].x, carts[0].y)
