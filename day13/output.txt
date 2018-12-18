@@ -1,4 +1,4 @@
 108, 28 wrong
 44, 80 wrong
-32, 85, sort by lowest x and go 1 more in direction
+32, 85, sort by lowest x and go 1 more in direction wrong answer
 75, 17 sort by greatest x, wrong
