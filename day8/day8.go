@@ -53,12 +53,14 @@ func performRecursion(sum int, input []int, n node, currentIndex int) (int, node
 	//add the first child to the list
 	tempNode := n
 	tempNode.header = [2]int{input[currentIndex], input[currentIndex+1]}
-	currentIndex++
+	tempNode.numChildNodes = tempNode.header[0]
+	tempNode.numChildNodes = tempNode.header[1]
+	currentIndex += 2
 	//check if the number of child nodes is 0
 	//if so return back to the head and get the next header after summing the child
 	if tempNode.header[0] == 0 {
 		for i := 0; i < tempNode.header[1]; i++ {
-			sum += input[currentIndex+1]
+			sum += input[currentIndex]
 			fmt.Println(sum)
 			currentIndex++
 		}
