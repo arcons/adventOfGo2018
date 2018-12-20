@@ -15,18 +15,18 @@ func main() {
 	// }
 	//open ground (.)46, trees (|)124, or a lumberyard (#)35
 	//create 2d array bytemap start 10x10 for the test
-	treeMap := make([][]byte, 10)
+	treeMap := make([][]byte, 50)
 	for i := range treeMap {
-		treeMap[i] = make([]byte, 10)
+		treeMap[i] = make([]byte, 50)
 	}
 
 	//make a temp since all of the updates are done at once and are going to be passed into the temp one
-	tempTreeMap := make([][]byte, 10)
+	tempTreeMap := make([][]byte, 50)
 	for i := range tempTreeMap {
-		tempTreeMap[i] = make([]byte, 10)
+		tempTreeMap[i] = make([]byte, 50)
 	}
 	//populate the treemap
-	fileHandle, _ := os.Open("day18testinput.txt")
+	fileHandle, _ := os.Open("day18input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	counter := 0
 	for fileScanner.Scan() {
@@ -34,31 +34,35 @@ func main() {
 		counter++
 	}
 
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
-			fmt.Println(string(treeMap[j]))
-		}
-		fmt.Println()
-		fmt.Println()
-		//clear the temptree map everytime
-		tempTreeMap := make([][]byte, 10)
+	//starts repeating at min 564 every 35 minutes so (1000000000-564)%35 for part b, to find repeat go in console and run it then find the repeats
+	//after 1000 runs
+	for i := 0; i < 580; i++ {
+		tempTreeMap := make([][]byte, 50)
 		for i := range tempTreeMap {
-			tempTreeMap[i] = make([]byte, 10)
+			tempTreeMap[i] = make([]byte, 50)
 		}
+		numLum := 0
+		numTree := 0
 		// tempTreeMap = treeMap
-		for j := 0; j < 10; j++ {
-			for k := 0; k < 10; k++ {
+		for j := 0; j < 50; j++ {
+			for k := 0; k < 50; k++ {
 				tempTreeMap[j][k] = checkCell(treeMap, j, k)
-				// fmt.Println(k, j)
+				if tempTreeMap[j][k] == '|' {
+					numTree++
+				} else if tempTreeMap[j][k] == '#' {
+					numLum++
+				}
 			}
 		}
+		// fmt.Println(numTree, numLum)
+		fmt.Println(i, numLum*numTree)
 		treeMap = tempTreeMap
 	}
 
 	numLum := 0
 	numTree := 0
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
+	for i := 0; i < 50; i++ {
+		for j := 0; j < 50; j++ {
 			if treeMap[i][j] == '|' {
 				numTree++
 			} else if treeMap[i][j] == '#' {
@@ -84,13 +88,13 @@ func checkCell(treeMap [][]byte, x int, y int) byte {
 	neighbors := [8]byte{}
 	//no edge cases this is super gross can definitely be quicker with a swithc
 	//error is assignment logic
-	if (x-1) < 0 || (x+1) > 9 || (y-1) < 0 || (y+1) > 9 {
+	if (x-1) < 0 || (x+1) > 49 || (y-1) < 0 || (y+1) > 49 {
 		if (x - 1) < 0 {
 			if (y - 1) < 0 {
 				neighbors[4] = treeMap[x+1][y]
 				neighbors[6] = treeMap[x][y+1]
 				neighbors[7] = treeMap[x+1][y+1]
-			} else if (y + 1) > 9 {
+			} else if (y + 1) > 49 {
 				neighbors[1] = treeMap[x][y-1]
 				neighbors[2] = treeMap[x+1][y-1]
 				neighbors[4] = treeMap[x+1][y]
@@ -102,12 +106,12 @@ func checkCell(treeMap [][]byte, x int, y int) byte {
 				neighbors[7] = treeMap[x+1][y+1]
 			}
 		}
-		if (x + 1) > 9 {
+		if (x + 1) > 49 {
 			if (y - 1) < 0 {
 				neighbors[5] = treeMap[x-1][y+1]
 				neighbors[6] = treeMap[x][y+1]
 				neighbors[3] = treeMap[x-1][y]
-			} else if (y + 1) > 9 {
+			} else if (y + 1) > 49 {
 				neighbors[3] = treeMap[x-1][y]
 				neighbors[0] = treeMap[x-1][y-1]
 				neighbors[1] = treeMap[x][y-1]
@@ -120,12 +124,12 @@ func checkCell(treeMap [][]byte, x int, y int) byte {
 			}
 		}
 		// case would be better here but I dont have internet lol
-		if (x + 1) > 9 {
+		if (x + 1) > 49 {
 			if (y - 1) < 0 {
 				neighbors[5] = treeMap[x-1][y+1]
 				neighbors[6] = treeMap[x][y+1]
 				neighbors[3] = treeMap[x-1][y]
-			} else if (y + 1) > 9 {
+			} else if (y + 1) > 49 {
 				neighbors[3] = treeMap[x-1][y]
 				neighbors[0] = treeMap[x-1][y-1]
 				neighbors[1] = treeMap[x][y-1]
@@ -143,7 +147,7 @@ func checkCell(treeMap [][]byte, x int, y int) byte {
 				neighbors[4] = treeMap[x+1][y]
 				neighbors[6] = treeMap[x][y+1]
 				neighbors[7] = treeMap[x+1][y+1]
-			} else if (x + 1) > 9 {
+			} else if (x + 1) > 49 {
 				neighbors[3] = treeMap[x-1][y]
 				neighbors[5] = treeMap[x-1][y+1]
 				neighbors[6] = treeMap[x][y+1]
@@ -155,12 +159,12 @@ func checkCell(treeMap [][]byte, x int, y int) byte {
 				neighbors[7] = treeMap[x+1][y+1]
 			}
 		}
-		if (y + 1) > 9 {
+		if (y + 1) > 49 {
 			if (x - 1) < 0 {
 				neighbors[1] = treeMap[x][y-1]
 				neighbors[2] = treeMap[x+1][y-1]
 				neighbors[4] = treeMap[x+1][y]
-			} else if (x + 1) > 9 {
+			} else if (x + 1) > 49 {
 				neighbors[0] = treeMap[x-1][y-1]
 				neighbors[1] = treeMap[x][y-1]
 				neighbors[3] = treeMap[x-1][y]
