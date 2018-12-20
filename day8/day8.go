@@ -14,7 +14,7 @@ type node struct {
 	numMetaDataEntries int
 }
 
-func main() {
+func main2() {
 	// fileHandle, _ := os.Open("day8input.txt")
 	fileHandle, _ := os.Open("day8testinput.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
