@@ -10,50 +10,36 @@ import (
 
 type instruction struct {
 	opcode    string
-	registers [3]int
+	registers [4]int
 }
 
 //check for behaving like 3 opcodds
 func main() {
 
-	input := [37]string{}
-	fileHandle, _ := os.Open("day19input.txt")
+	input := [32]string{}
+	fileHandle, _ := os.Open("day21input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
+	operations := [32]instruction{}
 	counter := 0
 	for fileScanner.Scan() {
 		input[counter] = fileScanner.Text()
 		counter++
 	}
 
-	inputSplit := strings.Split(input[0], " ")
-	instructionPointer, _ := strconv.Atoi(inputSplit[1])
-	fmt.Println(instructionPointer)
-	updatedInput := remove(input, 0)
-
-	outputReg := [6]int{}
-	for true {
-		outputReg, instructionPointer = performOperation(processInput(updatedInput[instructionPointer]), outputReg, instructionPointer)
-		if instructionPointer > 36 {
-			break
-		} else {
-			// fmt.Println(outputReg, instructionPointer)
-		}
+	outputReg := [4]int{0, 0, 0, 0}
+	for i := 1; i < 32; i++ {
+		operations[i] = processInput(input[i])
+		outputReg = performOperation(operations[i], outputReg)
 	}
-	//instruction pointer at register 3
-
-	fmt.Println("Part A: ", outputReg[0])
+	
+	fmt.Println("Part 2: ", outputReg[0])
 }
 
-func remove(slice [37]string, s int) []string {
-	return append(slice[:s], slice[s+1:]...)
-}
-
-func performOperation(op instruction, val [6]int, ip int) ([6]int, int) {
+func performOperation(op instruction, val [4]int) [4]int {
 	outputReg := val
-	regAVal := op.registers[0]
-	regBVal := op.registers[1]
-	regCVal := op.registers[2]
-	outputReg[3] = ip
+	regAVal := op.registers[1]
+	regBVal := op.registers[2]
+	regCVal := 0
 	if op.opcode == "addr" {
 		outputReg[regCVal] = (val[regAVal] + val[regBVal])
 
@@ -67,69 +53,67 @@ func performOperation(op instruction, val [6]int, ip int) ([6]int, int) {
 		outputReg[regCVal] = (val[regAVal] * regBVal)
 
 	} else if op.opcode == "banr" {
-		outputReg[regCVal] = (outputReg[regAVal] & outputReg[regBVal])
+		outputReg[regCVal] = (val[regAVal] & val[regBVal])
 
 	} else if op.opcode == "bani" {
-		outputReg[regCVal] = (outputReg[regAVal] & regBVal)
+		outputReg[regCVal] = (val[regAVal] & regBVal)
 
 	} else if op.opcode == "borr" {
-		outputReg[regCVal] = (outputReg[regAVal] | outputReg[regBVal])
+		outputReg[regCVal] = (val[regAVal] | val[regBVal])
 
 	} else if op.opcode == "bori" {
-		outputReg[regCVal] = (outputReg[regAVal] | regBVal)
+		outputReg[regCVal] = (val[regAVal] | regBVal)
 
 	} else if op.opcode == "setr" {
-		outputReg[regCVal] = outputReg[regAVal]
+		outputReg[regCVal] = val[regAVal]
 
 	} else if op.opcode == "seti" {
 		outputReg[regCVal] = regAVal
 
 	} else if op.opcode == "gtir" {
-		if regAVal > outputReg[regBVal] {
+		if regAVal > val[regBVal] {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 
 	} else if op.opcode == "gtri" {
-		if outputReg[regAVal] > regBVal {
+		if val[regAVal] > regBVal {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 
 	} else if op.opcode == "gtrr" {
-		if outputReg[regAVal] > outputReg[regBVal] {
+		if val[regAVal] > val[regBVal] {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 
 	} else if op.opcode == "eqir" {
-		if regAVal == outputReg[regBVal] {
+		if regAVal == val[regBVal] {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 
 	} else if op.opcode == "eqri" {
-		if outputReg[regAVal] == regBVal {
+		if val[regAVal] == regBVal {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 
 	} else if op.opcode == "eqrr" {
-		if outputReg[regAVal] == outputReg[regBVal] {
+		if val[regAVal] == val[regBVal] {
 			outputReg[regCVal] = 1
 		} else {
 			outputReg[regCVal] = 0
 		}
 	}
-	ip = outputReg[3]
-	ip++
-	fmt.Println(op, outputReg, ip)
-	return outputReg, ip
+
+	return outputReg
 }
 
 func processInput(text string) instruction {
@@ -144,7 +128,7 @@ func processInput(text string) instruction {
 	reg1, _ := strconv.Atoi(inputSplit[1])
 	reg2, _ := strconv.Atoi(inputSplit[2])
 	reg3, _ := strconv.Atoi(inputSplit[3])
-	registers := [3]int{reg1, reg2, reg3}
+	registers := [4]int{0, reg1, reg2, reg3}
 	output.registers = registers
 	return output
 }

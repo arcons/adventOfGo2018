@@ -5,4 +5,35 @@
 
 603 -wrong too low
 
-477
+bori
+muli
+banr
+bani
+gtir
+setr
+addr
+eqir
+seti
+addi
+eqrr
+eqri
+borr
+gtrr
+mulr
+gtri
+
+bori
+muli
+banr
+bani
+setr
+addr
+eqir
+seti
+addi
+eqrr
+eqri
+borr
+gtrr
+mulr
+gtri

@@ -1,4 +1,17 @@
 108, 28 wrong
 44, 80 wrong
 32, 85, sort by lowest x and go 1 more in direction wrong answer
+32, 84 wrong
 75, 17 sort by greatest x, wrong
+75, 18
+
+95,78 wrong
+
+47,103; maybe wrong
+
+82,104 who knows anymore
+
+correct output for internet input
+83,49 for part1
+
+73,36 for part2

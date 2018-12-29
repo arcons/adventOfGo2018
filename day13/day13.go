@@ -24,8 +24,8 @@ type Cart struct {
 
 func main() {
 	//real inputs
-	const xRange = 151
-	const yRange = 151
+	const xRange = 150
+	const yRange = 150
 	// const xRange = 8
 	// const yRange = 7
 	//build 2d array as map
@@ -33,8 +33,8 @@ func main() {
 	for i := range trackMap {
 		trackMap[i] = make([]byte, yRange)
 	}
-	// fileHandle, _ := os.Open("internetinput.txt")
-	fileHandle, _ := os.Open("day13input.txt")
+	fileHandle, _ := os.Open("internetinput.txt")
+	// fileHandle, _ := os.Open("day13input.txt")
 	// fileHandle, _ := os.Open("day13test2input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	carts := []Cart{}
@@ -102,13 +102,61 @@ func main() {
 	// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 	//cart options <(60), >(62), ^(94), v(118)
 	//keep a list of the carts at intersections
+
+	// sort.Slice(carts, func(q, r int) bool {
+	// 	if carts[q].y == carts[r].y {
+	// 		return carts[q].x < carts[r].x
+	// 	}
+	// 	return carts[q].y < carts[r].y
+	// })
+
+	// sort.Slice(carts, func(i, j int) bool {
+	// 	switch {
+	// 	case carts[i].y < carts[j].y:
+	// 		return true
+	// 	case carts[i].y > carts[j].y:
+	// 		return false
+	// 	default:
+	// 		return carts[i].x < carts[j].x
+	// 	}
+	// })
+
+	sort.Slice(carts, func(q, r int) bool {
+		if carts[q].x == carts[r].x {
+			return carts[q].y < carts[r].y
+		}
+		return carts[q].x < carts[r].x
+	})
+
 	for n := 0; n < 100000000; n++ {
 		for i := 0; i < len(carts); i++ {
 			// if carts[i].x == 4 && carts[i].y == 109 {
 			// 	fmt.Println(string(trackMap[carts[i].y][carts[i].x]))
 			// }
 			//every cart moves
-			if carts[i].currentDirection == '>' {
+			if carts[i].currentDirection == '^' {
+				carts[i].y--
+				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
+
+				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
+					carts[i].currentDirection = '<'
+				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
+					// right
+					carts[i].currentDirection = '>'
+				} else if trackMap[carts[i].y][carts[i].x] == 43 {
+					// +
+					if carts[i].nextTurn == "left" {
+						carts[i].nextTurn = "str"
+						carts[i].currentDirection = '<'
+					} else if carts[i].nextTurn == "str" {
+						carts[i].nextTurn = "right"
+						carts[i].currentDirection = '^'
+					} else if carts[i].nextTurn == "right" {
+						carts[i].nextTurn = "left"
+						carts[i].currentDirection = '>'
+					}
+				}
+			} else if carts[i].currentDirection == '>' {
 				carts[i].x++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
 				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
@@ -146,28 +194,6 @@ func main() {
 						carts[i].currentDirection = '^'
 					}
 				}
-			} else if carts[i].currentDirection == '^' {
-				carts[i].y--
-				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
-
-				if trackMap[carts[i].y][carts[i].x] == 92 || trackMap[carts[i].y][carts[i].x] == byte('r') {
-					carts[i].currentDirection = '<'
-				} else if trackMap[carts[i].y][carts[i].x] == 47 || trackMap[carts[i].y][carts[i].x] == byte('l') {
-					// right
-					carts[i].currentDirection = '>'
-				} else if trackMap[carts[i].y][carts[i].x] == 43 {
-					// +
-					if carts[i].nextTurn == "left" {
-						carts[i].nextTurn = "str"
-						carts[i].currentDirection = '<'
-					} else if carts[i].nextTurn == "str" {
-						carts[i].nextTurn = "right"
-						carts[i].currentDirection = '^'
-					} else if carts[i].nextTurn == "right" {
-						carts[i].nextTurn = "left"
-						carts[i].currentDirection = '>'
-					}
-				}
 			} else if carts[i].currentDirection == 'v' {
 				carts[i].y++
 				// turn \(92) (x+1), turn /(47)(x-1), straight |(124), intersectin +(43)
@@ -203,19 +229,41 @@ func main() {
 							secCartIndex = q
 						}
 					}
-
-					carts = remove(carts, secCartIndex)
+					if i > 1 {
+						i -= 2
+					} else {
+						i = 0
+					}
 					j = 0
-					i = 0
-					// 			sort.Slice(carts, func(q, r int) bool { return carts[q].y < carts[r].y })
-					sort.Slice(carts, func(q, r int) bool { return carts[q].x < carts[r].x })
-					// sort.Slice(carts, func(q, r int) bool { return carts[q].y < carts[r].y })
-
-					break
-
+					carts = remove(carts, secCartIndex)
 				}
 			}
 		}
+
+		// sort.Slice(carts, func(q, r int) bool {
+		// 	if carts[q].y == carts[r].y {
+		// 		return carts[q].x < carts[r].x
+		// 	}
+		// 	return carts[q].y < carts[r].y
+		// })
+
+		sort.Slice(carts, func(q, r int) bool {
+			if carts[q].x == carts[r].x {
+				return carts[q].y < carts[r].y
+			}
+			return carts[q].x < carts[r].x
+		})
+
+		// sort.Slice(carts, func(i, j int) bool {
+		// 	switch {
+		// 	case carts[i].x < carts[j].x:
+		// 		return true
+		// 	case carts[i].x > carts[j].x:
+		// 		return false
+		// 	default:
+		// 		return carts[i].y < carts[j].y
+		// 	}
+		// })
 
 		// for i := 0; i < len(carts); i++ {
 		// 	j := i + 1
