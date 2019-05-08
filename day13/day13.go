@@ -33,8 +33,8 @@ func main() {
 	for i := range trackMap {
 		trackMap[i] = make([]byte, yRange)
 	}
-	fileHandle, _ := os.Open("internetinput.txt")
-	// fileHandle, _ := os.Open("day13input.txt")
+	// fileHandle, _ := os.Open("internetinput.txt")
+	fileHandle, _ := os.Open("day13input.txt")
 	// fileHandle, _ := os.Open("day13test2input.txt")
 	fileScanner := bufio.NewScanner(fileHandle)
 	carts := []Cart{}
@@ -103,29 +103,11 @@ func main() {
 	//cart options <(60), >(62), ^(94), v(118)
 	//keep a list of the carts at intersections
 
-	// sort.Slice(carts, func(q, r int) bool {
-	// 	if carts[q].y == carts[r].y {
-	// 		return carts[q].x < carts[r].x
-	// 	}
-	// 	return carts[q].y < carts[r].y
-	// })
-
-	// sort.Slice(carts, func(i, j int) bool {
-	// 	switch {
-	// 	case carts[i].y < carts[j].y:
-	// 		return true
-	// 	case carts[i].y > carts[j].y:
-	// 		return false
-	// 	default:
-	// 		return carts[i].x < carts[j].x
-	// 	}
-	// })
-
 	sort.Slice(carts, func(q, r int) bool {
-		if carts[q].x == carts[r].x {
-			return carts[q].y < carts[r].y
+		if carts[q].y == carts[r].y {
+			return carts[q].x < carts[r].x
 		}
-		return carts[q].x < carts[r].x
+		return carts[q].y < carts[r].y
 	})
 
 	for n := 0; n < 100000000; n++ {
@@ -240,19 +222,19 @@ func main() {
 			}
 		}
 
-		// sort.Slice(carts, func(q, r int) bool {
-		// 	if carts[q].y == carts[r].y {
-		// 		return carts[q].x < carts[r].x
-		// 	}
-		// 	return carts[q].y < carts[r].y
-		// })
-
 		sort.Slice(carts, func(q, r int) bool {
-			if carts[q].x == carts[r].x {
-				return carts[q].y < carts[r].y
+			if carts[q].y == carts[r].y {
+				return carts[q].x < carts[r].x
 			}
-			return carts[q].x < carts[r].x
+			return carts[q].y < carts[r].y
 		})
+
+		// sort.Slice(carts, func(q, r int) bool {
+		// 	if carts[q].x == carts[r].x {
+		// 		return carts[q].y < carts[r].y
+		// 	}
+		// 	return carts[q].x < carts[r].x
+		// })
 
 		// sort.Slice(carts, func(i, j int) bool {
 		// 	switch {

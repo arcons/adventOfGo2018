@@ -15,3 +15,7 @@ correct output for internet input
 83,49 for part1
 
 73,36 for part2
+
+53 134
+
+88 64 correct answer

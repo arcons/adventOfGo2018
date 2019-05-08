@@ -27,17 +27,22 @@ func main() {
 
 	inputSplit := strings.Split(input[0], " ")
 	instructionPointer, _ := strconv.Atoi(inputSplit[1])
-	fmt.Println(instructionPointer)
 	updatedInput := remove(input, 0)
-
 	outputReg := [6]int{}
+	ip := 0
 	for true {
-		outputReg, instructionPointer = performOperation(processInput(updatedInput[instructionPointer]), outputReg, instructionPointer)
-		if instructionPointer > 36 {
+		if ip > 35 || outputReg[instructionPointer] < 0 {
 			break
-		} else {
-			// fmt.Println(outputReg, instructionPointer)
 		}
+		outputReg, ip = performOperation(processInput(updatedInput[ip]), outputReg, instructionPointer)
+		ip = outputReg[instructionPointer]
+		ip++
+		// ip = registers[init_ip]
+		// while ip < len(code):
+		//    registers[init_ip] = ip
+		//    fnmap[code[ip][0]](registers, code[ip])
+		//    ip = registers[init_ip]
+		//    ip +=1
 	}
 	//instruction pointer at register 3
 
@@ -53,7 +58,6 @@ func performOperation(op instruction, val [6]int, ip int) ([6]int, int) {
 	regAVal := op.registers[0]
 	regBVal := op.registers[1]
 	regCVal := op.registers[2]
-	outputReg[3] = ip
 	if op.opcode == "addr" {
 		outputReg[regCVal] = (val[regAVal] + val[regBVal])
 
@@ -126,8 +130,6 @@ func performOperation(op instruction, val [6]int, ip int) ([6]int, int) {
 			outputReg[regCVal] = 0
 		}
 	}
-	ip = outputReg[3]
-	ip++
 	fmt.Println(op, outputReg, ip)
 	return outputReg, ip
 }
